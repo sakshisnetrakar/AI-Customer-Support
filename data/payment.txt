@@ -1,0 +1,9 @@
+TechCare Payment Information
+
+TechCare accepts credit cards, debit cards, and UPI payments.
+
+Customers can also use supported digital wallets.
+
+Payment must be completed before an order is shipped.
+
+If a payment fails, customers should verify their payment details and try again.
