@@ -6,6 +6,7 @@ from text_processor import tokenize
 
 def calculate_tf(words):
     word_count = len(words)
+
     frequencies = {}
 
     for word in words:
@@ -19,12 +20,49 @@ def calculate_tf(words):
     return tf
 
 
-documents = load_documents()
+def calculate_idf(documents):
+    total_documents = len(documents)
 
-for filename, content in documents.items():
-    words = tokenize(content)
+    document_frequency = {}
 
+    for content in documents.values():
+        words = set(tokenize(content))
+
+        for word in words:
+            document_frequency[word] = (
+                document_frequency.get(word, 0) + 1
+            )
+
+    idf = {}
+
+    for word, count in document_frequency.items():
+        idf[word] = math.log(total_documents / count)
+
+    return idf
+
+
+def calculate_tfidf(words, idf):
     tf = calculate_tf(words)
 
-    print(f"\n{filename}")
-    print(tf)
+    tfidf = {}
+
+    for word, tf_value in tf.items():
+        tfidf[word] = tf_value * idf.get(word, 0)
+
+    return tfidf
+
+
+documents = load_documents()
+
+idf = calculate_idf(documents)
+
+for filename, content in documents.items():
+
+    words = tokenize(content)
+
+    tfidf = calculate_tfidf(words, idf)
+
+    print(f"\n--- {filename} ---")
+
+    for word, score in tfidf.items():
+        print(f"{word}: {score:.3f}")
