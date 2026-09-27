@@ -26,6 +26,7 @@ def calculate_idf(documents):
     document_frequency = {}
 
     for content in documents.values():
+
         words = set(tokenize(content))
 
         for word in words:
@@ -42,6 +43,7 @@ def calculate_idf(documents):
 
 
 def calculate_tfidf(words, idf):
+
     tf = calculate_tf(words)
 
     tfidf = {}
@@ -52,17 +54,19 @@ def calculate_tfidf(words, idf):
     return tfidf
 
 
-documents = load_documents()
+if __name__ == "__main__":
 
-idf = calculate_idf(documents)
+    documents = load_documents()
 
-for filename, content in documents.items():
+    idf = calculate_idf(documents)
 
-    words = tokenize(content)
+    for filename, content in documents.items():
 
-    tfidf = calculate_tfidf(words, idf)
+        words = tokenize(content)
 
-    print(f"\n--- {filename} ---")
+        tfidf = calculate_tfidf(words, idf)
 
-    for word, score in tfidf.items():
-        print(f"{word}: {score:.3f}")
+        print(f"\n--- {filename} ---")
+
+        for word, score in tfidf.items():
+            print(f"{word}: {score:.3f}")
