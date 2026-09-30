@@ -1,6 +1,6 @@
+import json
 import numpy as np
 from sklearn.metrics.pairwise import cosine_similarity
-
 
 class VectorStore:
 
@@ -15,28 +15,22 @@ class VectorStore:
 
     def search(self, query_vector, top_k=3):
 
-        # If there are no vectors
         if not self.vectors:
             return []
 
-        # Convert stored vectors into NumPy array
         vectors = np.array(self.vectors)
 
-        # Calculate cosine similarity
         similarities = cosine_similarity(
             [query_vector],
             vectors
         )[0]
 
-        # Get indices sorted from highest similarity
         ranked_indices = np.argsort(
             similarities
         )[::-1]
 
-        # Store search results
         results = []
 
-        # Get top K results
         for index in ranked_indices[:top_k]:
 
             results.append({
@@ -44,5 +38,37 @@ class VectorStore:
                 "metadata": self.metadata[index]
             })
 
-        # IMPORTANT: return the results
         return results
+
+    def save(self, vector_file, metadata_file):
+
+        vectors = np.array(self.vectors)
+
+        np.save(vector_file, vectors)
+
+        with open(
+            metadata_file,
+            "w",
+            encoding="utf-8"
+        ) as file:
+
+            json.dump(
+                self.metadata,
+                file,
+                indent=4
+            )
+
+    def load(self, vector_file, metadata_file):
+
+        vectors = np.load(vector_file)
+
+        with open(
+            metadata_file,
+            "r",
+            encoding="utf-8"
+        ) as file:
+
+            metadata = json.load(file)
+
+        self.vectors = list(vectors)
+        self.metadata = metadata
