@@ -1,63 +1,67 @@
+
 from sentence_transformers import SentenceTransformer
 
 from vector_store import VectorStore
 
 
-# Load embedding model
-model = SentenceTransformer("all-MiniLM-L6-v2")
+# 1. Configuration
+MODEL_NAME = "all-MiniLM-L6-v2"
+TOP_K = 3
+SIMILARITY_THRESHOLD = 0.40
 
 
-# Create vector store
+# 2. Load the embedding model
+model = SentenceTransformer(MODEL_NAME)
+
+
+# 3. Load the saved vector store
 store = VectorStore()
 
-
-# Load previously indexed data
 store.load(
     "index/vectors.npy",
     "index/metadata.json"
 )
 
-
-print(
-    f"Loaded {len(store.vectors)} vectors."
-)
+print(f"Loaded {len(store.vectors)} vectors.")
 
 
-# Ask the user
+# 4. Ask the user a question
 question = input("\nAsk your question: ")
 
 
-# Convert question into embedding
+# 5. Convert the question into an embedding
 question_embedding = model.encode(question)
 
 
-# Search vector store
+# 6. Retrieve the top-K results
 results = store.search(
     question_embedding,
-    top_k=3
+    top_k=TOP_K
 )
 
 
-# Display results
-print("\nTop Results:")
-print("-----------")
+# 7. Filter results using the threshold
+relevant_results = [
+    result
+    for result in results
+    if result["score"] >= SIMILARITY_THRESHOLD
+]
 
 
-for i, result in enumerate(results):
+# 8. Display the results
+print("\nRetrieval Results")
+print("-----------------")
 
-    print(f"\nResult {i + 1}")
-
+if not relevant_results:
     print(
-        f"Similarity: "
-        f"{result['score']:.3f}"
+        "I couldn't find sufficiently relevant "
+        "information in the TechCare knowledge base."
     )
 
-    print(
-        f"Source: "
-        f"{result['metadata']['source']}"
-    )
+else:
+    for i, result in enumerate(relevant_results, start=1):
 
-    print(
-        f"Text:\n"
-        f"{result['metadata']['text']}"
-    )
+        print(f"\nResult {i}")
+        print(f"Similarity: {result['score']:.3f}")
+        print(f"Source: {result['metadata']['source']}")
+        print(f"Text: {result['metadata']['text']}")
