@@ -1,15 +1,33 @@
-# Virtual environment
+
+# Virtual environments
 venv/
+.venv/
 
-# Python cache
+# Python cache files
 __pycache__/
-*.pyc
+*.py[cod]
+*$py.class
 
-# Environment variables
+# Environment variables and API keys
 .env
-
-index/
+.env.*
+!.env.example
 
 # IDE files
 .vscode/
 .idea/
+
+# OS files
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# Logs
+*.log
+
+# Temporary files
+*.tmp
+*.bak
+
+# Generated vector index
+index/
